@@ -10,10 +10,10 @@ import { BarChart, FileText, Table as TableIcon } from "lucide-react";
 const StatsDashboard = () => {
   return (
     <div className="grid gap-4 md:grid-cols-3">
-      <Card>
+      <Card className="shadow-lg border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Rows</CardTitle>
-          <TableIcon className="h-4 w-4 text-muted-foreground" />
+          <TableIcon className="h-4 w-4 text-accent" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">1,234</div>
@@ -22,10 +22,10 @@ const StatsDashboard = () => {
           </p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="shadow-lg border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Columns</CardTitle>
-          <FileText className="h-4 w-4 text-muted-foreground" />
+          <FileText className="h-4 w-4 text-accent" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">15</div>
@@ -34,10 +34,10 @@ const StatsDashboard = () => {
           </p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="shadow-lg border-gray-200">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Missing Values</CardTitle>
-          <BarChart className="h-4 w-4 text-muted-foreground" />
+          <BarChart className="h-4 w-4 text-accent" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">2.4%</div>

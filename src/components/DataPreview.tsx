@@ -17,12 +17,12 @@ const DataPreview = () => {
   ];
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-lg border border-gray-200 bg-white dark:bg-gray-800">
       <Table>
         <TableHeader>
           <TableRow>
             {headers.map((header, index) => (
-              <TableHead key={index} className="font-mono">
+              <TableHead key={index} className="font-mono font-medium">
                 {header}
               </TableHead>
             ))}
@@ -32,7 +32,10 @@ const DataPreview = () => {
           {rows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
               {row.map((cell, cellIndex) => (
-                <TableCell key={cellIndex} className="font-mono">
+                <TableCell
+                  key={cellIndex}
+                  className="font-mono text-muted-foreground"
+                >
                   {cell}
                 </TableCell>
               ))}
