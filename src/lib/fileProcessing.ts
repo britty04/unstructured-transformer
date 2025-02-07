@@ -31,7 +31,7 @@ export const calculateStats = (data: DataRow[]): DatasetStats => {
   const columns = Object.keys(data[0] || {}).map(colName => {
     const values = data.map(row => row[colName]);
     const missingValues = values.filter(v => v === undefined || v === '').length;
-    const type = values.some(v => typeof v === 'number') ? 'numeric' : 'categorical';
+    const type: 'numeric' | 'categorical' = values.some(v => typeof v === 'number') ? 'numeric' : 'categorical';
     
     return {
       name: colName,

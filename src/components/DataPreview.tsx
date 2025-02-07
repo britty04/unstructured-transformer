@@ -12,8 +12,8 @@ interface DataPreviewProps {
   data: DataRow[];
 }
 
-const DataPreview = ({ data }: DataPreviewProps) => {
-  if (!data.length) {
+const DataPreview = ({ data = [] }: DataPreviewProps) => {
+  if (!data?.length) {
     return (
       <div className="text-center p-8 text-muted-foreground">
         No data to display. Upload a CSV file to get started.
