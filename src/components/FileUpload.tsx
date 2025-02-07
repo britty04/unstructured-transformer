@@ -32,6 +32,7 @@ const FileUpload = () => {
       title: "Files received",
       description: `${files.length} file(s) uploaded successfully.`,
     });
+    // Here we'll add the actual file processing logic in the next step
   };
 
   return (
