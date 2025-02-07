@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { Upload, FileUp } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { parseCSV } from "@/lib/fileProcessing";
+import { DataRow } from "@/lib/fileProcessing";
 
-const FileUpload = () => {
+interface FileUploadProps {
+  onDataLoaded: (data: DataRow[]) => void;
+}
+
+const FileUpload = ({ onDataLoaded }: FileUploadProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const { toast } = useToast();
 
@@ -27,12 +33,26 @@ const FileUpload = () => {
     handleFiles(files);
   };
 
-  const handleFiles = (files: File[]) => {
-    toast({
-      title: "Files received",
-      description: `${files.length} file(s) uploaded successfully.`,
-    });
-    // Here we'll add the actual file processing logic in the next step
+  const handleFiles = async (files: File[]) => {
+    const file = files[0];
+    if (!file) return;
+
+    try {
+      const content = await file.text();
+      const data = parseCSV(content);
+      onDataLoaded(data);
+      
+      toast({
+        title: "File processed successfully",
+        description: `Loaded ${data.length} rows of data.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error processing file",
+        description: "Please ensure the file is in CSV format.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -65,12 +85,12 @@ const FileUpload = () => {
             <input
               type="file"
               className="hidden"
-              multiple
+              accept=".csv"
               onChange={handleFileInput}
             />
           </label>
           <p className="text-xs text-muted-foreground mt-2">
-            Supported formats: CSV, JSON, TXT, XML
+            Supported format: CSV
           </p>
         </div>
       </div>

@@ -1,11 +1,15 @@
+import { useState } from "react";
 import FileUpload from "@/components/FileUpload";
 import DataPreview from "@/components/DataPreview";
 import TransformPanel from "@/components/TransformPanel";
 import ExportPanel from "@/components/ExportPanel";
 import StatsDashboard from "@/components/StatsDashboard";
 import { Database, BrainCircuit } from "lucide-react";
+import { DataRow } from "@/lib/fileProcessing";
 
 const Index = () => {
+  const [data, setData] = useState<DataRow[]>([]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto py-8 px-4">
@@ -23,23 +27,23 @@ const Index = () => {
         </div>
 
         <div className="mb-8 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-          <FileUpload />
+          <FileUpload onDataLoaded={setData} />
         </div>
 
         <div className="mb-8">
-          <StatsDashboard />
+          <StatsDashboard data={data} />
         </div>
 
         <div className="grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
             <div className="p-6">
               <h2 className="text-2xl font-semibold mb-4">Data Preview</h2>
-              <DataPreview />
+              <DataPreview data={data} />
             </div>
           </div>
           <div className="space-y-8">
-            <TransformPanel />
-            <ExportPanel />
+            <TransformPanel data={data} onDataTransformed={setData} />
+            <ExportPanel data={data} />
           </div>
         </div>
       </div>

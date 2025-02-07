@@ -6,8 +6,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BarChart, FileText, Table as TableIcon } from "lucide-react";
+import { DataRow, calculateStats } from "@/lib/fileProcessing";
 
-const StatsDashboard = () => {
+interface StatsDashboardProps {
+  data: DataRow[];
+}
+
+const StatsDashboard = ({ data }: StatsDashboardProps) => {
+  const stats = data.length ? calculateStats(data) : null;
+
+  const numericColumns = stats?.columns.filter(col => col.type === 'numeric').length || 0;
+  const categoricalColumns = stats?.columns.filter(col => col.type === 'categorical').length || 0;
+
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <Card className="shadow-lg border-gray-200">
@@ -16,9 +26,9 @@ const StatsDashboard = () => {
           <TableIcon className="h-4 w-4 text-accent" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">1,234</div>
+          <div className="text-2xl font-bold">{stats?.totalRows || 0}</div>
           <p className="text-xs text-muted-foreground">
-            +180 from last dataset
+            Ready for processing
           </p>
         </CardContent>
       </Card>
@@ -28,9 +38,9 @@ const StatsDashboard = () => {
           <FileText className="h-4 w-4 text-accent" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">15</div>
+          <div className="text-2xl font-bold">{stats?.columns.length || 0}</div>
           <p className="text-xs text-muted-foreground">
-            3 numeric, 12 categorical
+            {numericColumns} numeric, {categoricalColumns} categorical
           </p>
         </CardContent>
       </Card>
@@ -40,9 +50,13 @@ const StatsDashboard = () => {
           <BarChart className="h-4 w-4 text-accent" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">2.4%</div>
+          <div className="text-2xl font-bold">
+            {stats ? `${stats.missingValuesPercentage.toFixed(1)}%` : '0%'}
+          </div>
           <p className="text-xs text-muted-foreground">
-            Well below threshold (5%)
+            {stats?.missingValuesPercentage <= 5 
+              ? 'Well below threshold (5%)'
+              : 'Above recommended threshold'}
           </p>
         </CardContent>
       </Card>

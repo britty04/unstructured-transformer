@@ -6,15 +6,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { DataRow } from "@/lib/fileProcessing";
 
-const DataPreview = () => {
-  // Sample data for demonstration
-  const headers = ["Column 1", "Column 2", "Column 3"];
-  const rows = [
-    ["Data 1", "Data 2", "Data 3"],
-    ["Data 4", "Data 5", "Data 6"],
-    ["Data 7", "Data 8", "Data 9"],
-  ];
+interface DataPreviewProps {
+  data: DataRow[];
+}
+
+const DataPreview = ({ data }: DataPreviewProps) => {
+  if (!data.length) {
+    return (
+      <div className="text-center p-8 text-muted-foreground">
+        No data to display. Upload a CSV file to get started.
+      </div>
+    );
+  }
+
+  const headers = Object.keys(data[0]);
+  const previewRows = data.slice(0, 5); // Show first 5 rows
 
   return (
     <div className="rounded-lg border border-gray-200 bg-white dark:bg-gray-800">
@@ -29,14 +37,14 @@ const DataPreview = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rows.map((row, rowIndex) => (
+          {previewRows.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
-              {row.map((cell, cellIndex) => (
+              {headers.map((header, cellIndex) => (
                 <TableCell
                   key={cellIndex}
                   className="font-mono text-muted-foreground"
                 >
-                  {cell}
+                  {row[header]?.toString()}
                 </TableCell>
               ))}
             </TableRow>
