@@ -14,9 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BarChart, LineChart, ScatterPlot } from "lucide-react";
+import { BarChart, LineChart, PieChart } from "lucide-react";
 import { DataRow } from "@/lib/fileProcessing";
-import { generateDistributionChart, generateScatterPlot } from "@/lib/dataVisualizations";
+import { generateDistributionChart, generateTemporalChart } from "@/lib/dataVisualizations";
 import {
   ResponsiveContainer,
   BarChart as RechartsBarChart,
@@ -25,7 +25,10 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  LineChart as RechartsLineChart,
+  Line,
 } from "recharts";
+import { detectColumnFormat } from "@/lib/formatDetection";
 
 interface DataVisualizationProps {
   data: DataRow[];
@@ -33,8 +36,16 @@ interface DataVisualizationProps {
 
 const DataVisualization = ({ data }: DataVisualizationProps) => {
   const [selectedColumn, setSelectedColumn] = useState<string>("");
+  const [chartType, setChartType] = useState<"bar" | "line">("bar");
+  
   const columns = data.length ? Object.keys(data[0]) : [];
-  const chartData = selectedColumn ? generateDistributionChart(data, selectedColumn) : null;
+  const columnFormat = selectedColumn ? detectColumnFormat(data.map(row => row[selectedColumn])) : null;
+  
+  const chartData = selectedColumn 
+    ? (columnFormat?.type === 'date' 
+        ? generateTemporalChart(data, selectedColumn, columns[1]) 
+        : generateDistributionChart(data, selectedColumn))
+    : null;
 
   if (!data.length) return null;
 
@@ -61,24 +72,64 @@ const DataVisualization = ({ data }: DataVisualizationProps) => {
               ))}
             </SelectContent>
           </Select>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setChartType("bar")}
+              className={`p-2 rounded ${
+                chartType === "bar" ? "bg-accent text-white" : "bg-gray-100"
+              }`}
+            >
+              <BarChart className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setChartType("line")}
+              className={`p-2 rounded ${
+                chartType === "line" ? "bg-accent text-white" : "bg-gray-100"
+              }`}
+            >
+              <LineChart className="h-5 w-5" />
+            </button>
+          </div>
         </div>
         {chartData && (
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <RechartsBarChart data={chartData.labels.map((label, index) => ({
-                name: label,
-                value: chartData.datasets[0].data[index]
-              }))}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar
-                  dataKey="value"
-                  fill="#8884d8"
-                  name={chartData.datasets[0].label}
-                />
-              </RechartsBarChart>
+              {chartType === "bar" ? (
+                <RechartsBarChart
+                  data={chartData.labels.map((label, index) => ({
+                    name: label,
+                    value: chartData.datasets[0].data[index],
+                  }))}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar
+                    dataKey="value"
+                    fill="#8884d8"
+                    name={chartData.datasets[0].label}
+                  />
+                </RechartsBarChart>
+              ) : (
+                <RechartsLineChart
+                  data={chartData.labels.map((label, index) => ({
+                    name: label,
+                    value: chartData.datasets[0].data[index],
+                  }))}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#8884d8"
+                    name={chartData.datasets[0].label}
+                  />
+                </RechartsLineChart>
+              )}
             </ResponsiveContainer>
           </div>
         )}

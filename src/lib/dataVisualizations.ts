@@ -17,33 +17,39 @@ export const generateDistributionChart = (data: DataRow[], column: string): Char
     values.filter(v => v === value).length
   );
 
+  const colors = [
+    'rgba(54, 162, 235, 0.5)',
+    'rgba(255, 99, 132, 0.5)',
+    'rgba(75, 192, 192, 0.5)',
+    'rgba(255, 206, 86, 0.5)',
+    'rgba(153, 102, 255, 0.5)',
+  ];
+
   return {
     labels: uniqueValues.map(v => v.toString()),
     datasets: [{
       label: `Distribution of ${column}`,
       data: counts,
-      backgroundColor: [
-        'rgba(54, 162, 235, 0.5)',
-        'rgba(255, 99, 132, 0.5)',
-        'rgba(75, 192, 192, 0.5)',
-        'rgba(255, 206, 86, 0.5)',
-        'rgba(153, 102, 255, 0.5)',
-      ],
+      backgroundColor: colors.slice(0, uniqueValues.length),
     }]
   };
 };
 
-export const generateScatterPlot = (
+export const generateTemporalChart = (
   data: DataRow[],
   xColumn: string,
   yColumn: string
 ): ChartData => {
+  const sortedData = [...data].sort((a, b) => 
+    new Date(a[xColumn].toString()).getTime() - new Date(b[xColumn].toString()).getTime()
+  );
+
   return {
-    labels: data.map((_, index) => index.toString()),
+    labels: sortedData.map(row => row[xColumn].toString()),
     datasets: [{
-      label: `${xColumn} vs ${yColumn}`,
-      data: data.map(row => Number(row[xColumn])),
-      backgroundColor: 'rgba(54, 162, 235, 0.5)',
+      label: `${yColumn} over time`,
+      data: sortedData.map(row => Number(row[yColumn])),
+      backgroundColor: ['rgba(54, 162, 235, 0.5)'],
     }]
   };
 };
